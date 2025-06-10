@@ -1,0 +1,24 @@
+{
+	"singleQuote": true,
+	"jsxSingleQuote": true,
+	"trailingComma": "all",
+	"tabWidth": 4,
+	"bracketSpacing": true,
+	"useTabs": true,
+	"importOrder": [
+		"^react/?(.*)$",
+		"^react-native/?(.*)$",
+		"^react-native-web/?(.*)$",
+		"^@headout/(.*)$",
+		"^@screen/(.*)$",
+		"^@components/(.*)$",
+		"^@providers/(.*)$",
+		"^@utils/(.*)$",
+		"^@hooks/(.*)$",
+		"^@assets/(.*)$",
+		"^@constants/(.*)$",
+		"<THIRD_PARTY_MODULES>",
+		"^[./]"
+	],
+	"importOrderSortSpecifiers": true
+}
