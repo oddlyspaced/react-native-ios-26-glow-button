@@ -34,33 +34,58 @@ const fontStyle = {
 // @ts-ignore
 const font = matchFont(fontStyle);
 
-export const AnimatedGlowButton = () => {
+const lightenHexColor = (hex: string, percent: number) => {
+	const amt = Math.round(2.55 * percent);
+	return (
+		'#' +
+		hex
+			.replace(/^#/, '')
+			.replace(/../g, (color) =>
+				(
+					'0' +
+					Math.min(
+						255,
+						Math.max(0, parseInt(color, 16) + amt),
+					).toString(16)
+				).slice(-2),
+			)
+	);
+};
+
+type AnimatedGlowButtonProps = {
+	backgroundColor?: string;
+};
+
+export const AnimatedGlowButton = ({
+	backgroundColor = '#2B85FF',
+}: AnimatedGlowButtonProps) => {
 	const btnWidth = DEVICE_WIDTH - 72;
 	const btnHeight = 64;
+
+	const glowColor1 = lightenHexColor(backgroundColor, 40); // lighter
+	const glowColor2 = lightenHexColor(backgroundColor, 20); // medium light
 
 	const touchX = useSharedValue(btnWidth / 2);
 	const touchY = useSharedValue(btnHeight / 2);
 	const startRadius = useSharedValue(0);
-	const endRadius = useSharedValue(0); // Start hidden
+	const endRadius = useSharedValue(0);
 	const translateX = useSharedValue(0);
 	const scale = useSharedValue(1);
 
 	const handleStart = (event: GestureResponderEvent) => {
 		const { locationX, locationY } = event.nativeEvent;
-
 		touchX.value = locationX;
 		touchY.value = locationY;
 		startRadius.value = withTiming(20, { duration: 80 });
 		endRadius.value = withTiming(180, { duration: 80 });
 
 		const normalized = (locationX - btnWidth / 2) / (btnWidth / 2);
-		translateX.value = Math.max(-1, Math.min(1, normalized)) * OFFSET; // left right
+		translateX.value = Math.max(-1, Math.min(1, normalized)) * OFFSET;
 		scale.value = withTiming(SCALE, { duration: 160 });
 	};
 
 	const handleMove = (event: GestureResponderEvent) => {
 		const { locationX, locationY } = event.nativeEvent;
-
 		touchX.value = locationX;
 		touchY.value = locationY;
 
@@ -71,10 +96,7 @@ export const AnimatedGlowButton = () => {
 	const handleRelease = () => {
 		startRadius.value = withTiming(0, { duration: 80 });
 		endRadius.value = withTiming(0, { duration: 80 });
-		translateX.value = withSpring(0, {
-			damping: 10,
-			stiffness: 120,
-		});
+		translateX.value = withSpring(0, { damping: 10, stiffness: 120 });
 		scale.value = withTiming(1, { duration: 80 });
 	};
 
@@ -106,7 +128,7 @@ export const AnimatedGlowButton = () => {
 					width={btnWidth}
 					height={btnHeight}
 					r={btnHeight / 2}
-					color={'#2B85FF'}
+					color={backgroundColor}
 				>
 					<Text
 						text={text}
@@ -114,14 +136,14 @@ export const AnimatedGlowButton = () => {
 						y={textY}
 						color={'white'}
 						font={font}
-					></Text>
+					/>
 					<TwoPointConicalGradient
 						start={start}
 						startR={startR}
 						end={end}
 						endR={endR}
-						colors={['#44FEFF', '#2B94FF']}
-					></TwoPointConicalGradient>
+						colors={[glowColor1, glowColor2]}
+					/>
 				</RoundedRect>
 			</Canvas>
 		</Animated.View>
