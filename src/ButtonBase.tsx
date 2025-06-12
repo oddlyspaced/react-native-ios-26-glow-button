@@ -52,18 +52,29 @@ const lightenHexColor = (hex: string, percent: number) => {
 	);
 };
 
-type AnimatedGlowButtonProps = {
+interface IAnimatedGlowButtonProps {
 	backgroundColor?: string;
-};
+	glowColorStartIntensity?: number;
+	glowColorEndIntensity?: number;
+	height?: number;
+	text?: string;
+}
 
 export const AnimatedGlowButton = ({
 	backgroundColor = '#2B85FF',
-}: AnimatedGlowButtonProps) => {
+	glowColorStartIntensity = 40,
+	glowColorEndIntensity = 20,
+	height = 64,
+	text = '',
+}: IAnimatedGlowButtonProps) => {
 	const btnWidth = DEVICE_WIDTH - 72;
-	const btnHeight = 64;
+	const btnHeight = height;
 
-	const glowColor1 = lightenHexColor(backgroundColor, 40); // lighter
-	const glowColor2 = lightenHexColor(backgroundColor, 20); // medium light
+	const glowColor1 = lightenHexColor(
+		backgroundColor,
+		glowColorStartIntensity,
+	);
+	const glowColor2 = lightenHexColor(backgroundColor, glowColorEndIntensity);
 
 	const touchX = useSharedValue(btnWidth / 2);
 	const touchY = useSharedValue(btnHeight / 2);
@@ -109,7 +120,6 @@ export const AnimatedGlowButton = ({
 		transform: [{ translateX: translateX.value }, { scale: scale.value }],
 	}));
 
-	const text = 'Add AirTag';
 	const textX = btnWidth / 2 - font.measureText(text).width / 2;
 	const textY = btnHeight / 2 + font.measureText(text).height / 2 - 4;
 

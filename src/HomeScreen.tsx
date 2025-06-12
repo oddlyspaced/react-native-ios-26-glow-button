@@ -30,7 +30,28 @@ export const HomeScreen = () => {
 						flex: 1,
 					}}
 				>
-					<AnimatedGlowButton />
+					<View style={{}}>
+						<AnimatedGlowButton
+							backgroundColor='#2B85FF'
+							glowColorStartIntensity={40}
+							glowColorEndIntensity={20}
+							height={56}
+							text='Add AirTag'
+						/>
+					</View>
+					<View
+						style={{
+							marginTop: 56 + 12,
+						}}
+					>
+						<AnimatedGlowButton
+							backgroundColor='#1C1C1C'
+							glowColorStartIntensity={20}
+							glowColorEndIntensity={5}
+							height={56}
+							text='Other Supported Items'
+						/>
+					</View>
 				</View>
 			</View>
 		</SafeAreaView>
