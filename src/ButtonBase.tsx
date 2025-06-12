@@ -19,6 +19,9 @@ import {
 	Text,
 	TwoPointConicalGradient,
 	vec,
+	LinearGradient,
+	Skia,
+	Shader,
 } from '@shopify/react-native-skia';
 
 const DEVICE_WIDTH = Dimensions.get('screen').width;
@@ -140,6 +143,13 @@ export const AnimatedGlowButton = ({
 					r={btnHeight / 2}
 					color={backgroundColor}
 				>
+					<TwoPointConicalGradient
+						start={start}
+						startR={startR}
+						end={end}
+						endR={endR}
+						colors={[glowColor1, glowColor2]}
+					/>
 					<Text
 						text={text}
 						x={textX}
@@ -147,12 +157,25 @@ export const AnimatedGlowButton = ({
 						color={'white'}
 						font={font}
 					/>
-					<TwoPointConicalGradient
-						start={start}
-						startR={startR}
-						end={end}
-						endR={endR}
-						colors={[glowColor1, glowColor2]}
+				</RoundedRect>
+
+				{/* Frosted edge effect */}
+				<RoundedRect
+					x={1}
+					y={1}
+					width={btnWidth - 2}
+					height={btnHeight - 2}
+					r={btnHeight / 2}
+					style='stroke'
+					strokeWidth={1}
+				>
+					<LinearGradient
+						start={vec(0, 0)}
+						end={vec(btnWidth, btnHeight)}
+						colors={[
+							'rgba(255,255,255,0.25)',
+							'rgba(255,255,255,0.05)',
+						]}
 					/>
 				</RoundedRect>
 			</Canvas>
