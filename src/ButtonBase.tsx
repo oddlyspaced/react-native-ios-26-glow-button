@@ -1,5 +1,10 @@
 import React from 'react';
-import { Dimensions, GestureResponderEvent, StyleSheet } from 'react-native';
+import {
+	Dimensions,
+	GestureResponderEvent,
+	Platform,
+	StyleSheet,
+} from 'react-native';
 import Animated, {
 	useSharedValue,
 	useDerivedValue,
@@ -9,13 +14,25 @@ import Animated, {
 } from 'react-native-reanimated';
 import {
 	Canvas,
+	matchFont,
 	RoundedRect,
+	Text,
 	TwoPointConicalGradient,
 	vec,
 } from '@shopify/react-native-skia';
 
 const DEVICE_WIDTH = Dimensions.get('screen').width;
 const OFFSET = 5;
+const SCALE = 1.05;
+
+const fontFamily = Platform.select({ ios: 'Helvetica', default: 'serif' });
+const fontStyle = {
+	fontFamily,
+	fontSize: 14,
+	fontWeight: '600',
+};
+// @ts-ignore
+const font = matchFont(fontStyle);
 
 export const AnimatedGlowButton = () => {
 	const btnWidth = DEVICE_WIDTH - 72;
@@ -26,6 +43,7 @@ export const AnimatedGlowButton = () => {
 	const startRadius = useSharedValue(0);
 	const endRadius = useSharedValue(0); // Start hidden
 	const translateX = useSharedValue(0);
+	const scale = useSharedValue(1);
 
 	const handleStart = (event: GestureResponderEvent) => {
 		const { locationX, locationY } = event.nativeEvent;
@@ -37,6 +55,7 @@ export const AnimatedGlowButton = () => {
 
 		const normalized = (locationX - btnWidth / 2) / (btnWidth / 2);
 		translateX.value = Math.max(-1, Math.min(1, normalized)) * OFFSET; // left right
+		scale.value = withTiming(SCALE, { duration: 160 });
 	};
 
 	const handleMove = (event: GestureResponderEvent) => {
@@ -56,6 +75,7 @@ export const AnimatedGlowButton = () => {
 			damping: 10,
 			stiffness: 120,
 		});
+		scale.value = withTiming(1, { duration: 80 });
 	};
 
 	const start = useDerivedValue(() => vec(touchX.value, touchY.value), []);
@@ -64,8 +84,12 @@ export const AnimatedGlowButton = () => {
 	const endR = useDerivedValue(() => endRadius.value, []);
 
 	const animatedStyle = useAnimatedStyle(() => ({
-		transform: [{ translateX: translateX.value }],
+		transform: [{ translateX: translateX.value }, { scale: scale.value }],
 	}));
+
+	const text = 'Add AirTag';
+	const textX = btnWidth / 2 - font.measureText(text).width / 2;
+	const textY = btnHeight / 2 + font.measureText(text).height / 2 - 4;
 
 	return (
 		<Animated.View
@@ -84,13 +108,20 @@ export const AnimatedGlowButton = () => {
 					r={btnHeight / 2}
 					color={'#2B85FF'}
 				>
+					<Text
+						text={text}
+						x={textX}
+						y={textY}
+						color={'white'}
+						font={font}
+					></Text>
 					<TwoPointConicalGradient
 						start={start}
 						startR={startR}
 						end={end}
 						endR={endR}
 						colors={['#44FEFF', '#2B94FF']}
-					/>
+					></TwoPointConicalGradient>
 				</RoundedRect>
 			</Canvas>
 		</Animated.View>
